@@ -1,11 +1,11 @@
 import configparser
 from datetime import datetime
 import logging
-import socket
 import sys
 from time import sleep
 
-import Sensors
+import BirdEnvironmentSensors
+import BirdCamera
 
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
 edge_config_file = 'birdcam_edge.ini'
@@ -34,15 +34,15 @@ def is_valid_hours():
     return False
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     edge_config = get_configuration()
 
     while is_valid_hours():
         logging.debug("In valid hours, continuing")
 
-        sensor = Sensors.Sensor(edge_config["Sensor_Definition"])
-        print(sensor.get_sensor_data())
+        bird_sensor = BirdEnvironmentSensors.BirdEnvironmentSensor(edge_config["Sensor_Definition"])
+        bird_camera = BirdCamera.BirdCamera(edge_config["Camera_Definition"])
+        print(bird_sensor.get_env_sensor_data())
         # collect Sensor data
         # get image
         # update image datals
@@ -51,4 +51,3 @@ if __name__ == '__main__':
 
         # sleep for a timeout
         sleep(edge_config['DEFAULT'].getint("sleep_delay"))
-

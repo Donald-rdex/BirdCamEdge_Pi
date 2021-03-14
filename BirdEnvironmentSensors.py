@@ -4,14 +4,25 @@ import logging
 logging.getLogger()
 
 
-class Sensor:
+class BirdEnvironmentSensor:
     def __init__(self, sensor_config):
-        self.type = sensor_config.get("sensor_app")
-        self.port = sensor_config.getint("port", 5555)
-        self.host = sensor_config.get("host", "")
-        logging.debug("Starting sensor type: {}".format(self.type))
+        self.sensor_name = sensor_config.get("sensor_name")
+        self.sensor_type = sensor_config.get("sensor_type")
 
-    def get_sensor_data(self):
+        if self.sensor_type == "network":
+            self.port = sensor_config.getint("port")
+            self.host = sensor_config.get("host")
+            if self.host is None or self.port is None:
+                logging.error("Incorrect sensor type definition, \
+                Network sensor given, but network configuration incomplete.")
+
+        logging.info("Starting sensor type: {}".format(self.sensor_name))
+
+    def get_env_sensor_data(self):
+        if self.sensor_type == "network":
+            return self._get_env_sensor_data_from_network()
+
+    def _get_env_sensor_data_from_network(self):
         logging.debug("Starting sensor reading on UDP host:port : {}:{}".format(self.host, self.port))
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
